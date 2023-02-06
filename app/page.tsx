@@ -7,7 +7,7 @@ async function getMovies() {
 
     const movies = await db
       .collection("movies")
-      .find({})
+      .find({ title: "The Leopard" })
       .sort({ metacritic: -1 })
       .limit(20)
       .toArray()
