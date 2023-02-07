@@ -1,31 +1,27 @@
-import clientPromise from "../lib/mongodb"
+"use client"
+import { useEffect, useState } from "react"
 
-async function getMovies() {
-  try {
-    const client = await clientPromise
-    const db = client.db("sample_mflix")
-
-    const movies = await db
-      .collection("movies")
-      .find({ title: "The Leopard" })
-      .sort({ metacritic: -1 })
-      .limit(20)
-      .toArray()
-
-    return movies
-  } catch (e) {
-    console.error(e)
+export default function Movies() {
+  const [movies, setMovies] = useState<any[]>()
+  const [query, setQuery] = useState("")
+  async function getMovies() {
+    const res = await fetch("/api")
+    const data = await res.json()
+    setMovies(data)
   }
-}
-
-export default async function Movies() {
-  const movies = await getMovies()
+  useEffect(() => {
+    getMovies()
+  }, [])
   return (
     <div>
       <h1>Top 20 Movies of All Time</h1>
       <p>
         <small>(According to Metacritic)</small>
       </p>
+      <form action={`/api/${query}`} method="GET">
+        <input type="text" onChange={(e) => setQuery(e.target.value)} />
+        <input type="submit" />
+      </form>
       <ul>
         {movies?.map((movie) => (
           <li>
