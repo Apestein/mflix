@@ -5,11 +5,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const client = await clientPromise
+  const db = client.db("sample_mflix")
   if (req.method === "GET") {
     try {
-      const client = await clientPromise
-      const db = client.db("sample_mflix")
-
       const movies = await db
         .collection("movies")
         .find({})
@@ -21,5 +20,12 @@ export default async function handler(
     } catch (e) {
       console.error(e)
     }
+  } else if (req.method === "POST") {
+    const title: string = req.body.title
+    console.log(title)
+    const createdMovie = await db
+      .collection("movies")
+      .insertOne({ title: "test" })
+    res.status(200).json(createdMovie)
   }
 }
